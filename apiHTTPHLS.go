@@ -17,6 +17,7 @@ func HTTPAPIServerStreamHLSM3U8(c *gin.Context) {
 		"channel": c.Param("channel"),
 		"func":    "HTTPAPIServerStreamHLSM3U8",
 	})
+	token := c.Query("token")
 
 	if !Storage.StreamChannelExist(c.Param("uuid"), c.Param("channel")) {
 		c.IndentedJSON(500, Message{Status: 0, Payload: ErrorStreamNotFound.Error()})
@@ -26,7 +27,7 @@ func HTTPAPIServerStreamHLSM3U8(c *gin.Context) {
 		return
 	}
 
-	if !RemoteAuthorization("HLS", c.Param("uuid"), c.Param("channel"), c.Param("token"), c.ClientIP()) {
+	if !RemoteAuthorization("HLS", c.Param("uuid"), c.Param("channel"), token, c.ClientIP()) {
 		requestLogger.WithFields(logrus.Fields{
 			"call": "RemoteAuthorization",
 		}).Errorln(ErrorStreamNotFound.Error())
