@@ -24,6 +24,15 @@ func HTTPAPIServerStreamWebRTC(c *gin.Context) {
 		}).Errorln(ErrorStreamNotFound.Error())
 		return
 	}
+
+	token := c.Query("token")
+	if !RemoteAuthorization("WebRTC", c.Param("uuid"), c.Param("channel"), token, c.ClientIP()) {
+		requestLogger.WithFields(logrus.Fields{
+			"call": "RemoteAuthorization",
+		}).Errorln(ErrorStreamNotFound.Error())
+		return
+	}
+
 	Storage.StreamChannelRun(c.Param("uuid"), c.Param("channel"))
 	codecs, err := Storage.StreamChannelCodecs(c.Param("uuid"), c.Param("channel"))
 	if err != nil {
